@@ -1,16 +1,16 @@
-// Palavras válidas personalizadas (base para comparação)
+// Palavras válidas personalizadas (em ordem alfabética base)
 const palavrasBase = [
-    "míope", "fome", "vime", "peso", "veio", 
-    "moisés", "vsfpo", "miso", "seio", "seis", 
-    "meio", "meso", "pome"
-];
+    "fome", "meio", "meso", "miso", "míope",
+    "moisés", "peso", "pome", "seio", "seis",
+    "veio", "vime", "vsfpo"
+].sort(); // Garante ordem alfabética
 
-// Versão normalizada das palavras válidas (sem acentos e minúsculas)
+// Versão normalizada das palavras válidas
 const palavrasValidas = palavrasBase.map(palavra => 
     palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 );
 
-// Letras disponíveis (em ordem alfabética)
+// Letras disponíveis (ordem alfabética)
 const letrasDisponiveis = ["E", "F", "I", "M", "O", "P", "S", "V"];
 let pontuacao = 0;
 let palavrasAcertadas = [];
@@ -20,13 +20,29 @@ function iniciarJogo() {
     document.getElementById("letras").textContent = letrasDisponiveis.join(", ");
     document.getElementById("pontuacao").textContent = pontuacao;
     document.getElementById("reiniciar-btn").style.display = "none";
+    atualizarContador();
 
     // Eventos
     document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
     document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
 }
 
-// Verifica se a palavra é válida (ignorando acentos e case)
+// Atualiza o contador de palavras restantes
+function atualizarContador() {
+    const restantes = palavrasBase.length - palavrasAcertadas.length;
+    document.getElementById("contador").textContent = 
+        `Faltam ${restantes} palavra${restantes !== 1 ? 's' : ''}`;
+}
+
+// Atualiza a lista de palavras acertadas (em ordem alfabética)
+function atualizarListaAcertos() {
+    const lista = document.getElementById("palavras-acertadas");
+    lista.innerHTML = palavrasAcertadas.sort().map(palavra => 
+        `<div>✅ ${palavra}</div>`
+    ).join("");
+}
+
+// Verifica se a palavra é válida
 function verificarPalavra() {
     const palavraInput = document.getElementById("palavra-input").value
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -46,7 +62,6 @@ function verificarPalavra() {
         return;
     }
 
-    // Verifica se está na lista de palavras válidas
     const palavraIndex = palavrasValidas.indexOf(palavraInput);
     if (palavraIndex >= 0) {
         const letrasPalavra = palavraInput.toUpperCase().split("");
@@ -57,15 +72,16 @@ function verificarPalavra() {
             resultado.textContent = `❌ Letras inválidas: ${letrasInvalidas.join(", ")}`;
             resultado.style.color = "red";
         } else {
-            // Adiciona a palavra ORIGINAL (com acentos se tiver)
             const palavraOriginal = palavrasBase[palavraIndex];
             pontuacao += palavraOriginal.length * 10;
             palavrasAcertadas.push(palavraOriginal);
             
             document.getElementById("pontuacao").textContent = pontuacao;
-            document.getElementById("palavras-acertadas").innerHTML += `<div>✅ ${palavraOriginal}</div>`;
             resultado.textContent = `✅ Palavra válida! +${palavraOriginal.length * 10} pontos`;
             resultado.style.color = "green";
+            
+            atualizarListaAcertos();
+            atualizarContador();
             verificarVitoria();
         }
     } else {
@@ -83,6 +99,7 @@ function verificarVitoria() {
             "<span style='color: gold; font-size: 1.5em;'>🎉 FELIZ ANIVERSÁRIO, MOISÉS! 🎉</span>";
         document.getElementById("verificar-btn").disabled = true;
         document.getElementById("reiniciar-btn").style.display = "block";
+        document.getElementById("contador").textContent = "Todas palavras encontradas!";
         triggerConfetti();
     }
 }

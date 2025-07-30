@@ -71,3 +71,8 @@ button:hover {
     margin-top: 20px;
     text-align: left;
 }
+
+#contador {
+    font-weight: bold;
+    color: #555;
+}

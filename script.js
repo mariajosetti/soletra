@@ -1,7 +1,7 @@
-// Palavras válidas em ordem alfabética
+// Palavras válidas em ordem alfabética (removidas 'meso' e 'miso')
 const palavrasBase = [
-    "fome", "meio", "meso", "miso", "míope",
-    "moisés", "peso", "pome", "seio", "seis",
+    "fome", "meio", "míope", "moisés", 
+    "peso", "pome", "seio", "seis",
     "veio", "vime", "vsfpo"
 ];
 
@@ -18,12 +18,13 @@ let palavrasAcertadas = [];
 // Inicia o jogo
 function iniciarJogo() {
     document.getElementById("letras").textContent = letrasDisponiveis.join(", ");
-    document.getElementById("pontuacao").textContent = pontuacao;
     document.getElementById("reiniciar-btn").style.display = "none";
     atualizarContador();
 
-    // Eventos
+    // Evento do botão Verificar
     document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
+    
+    // Evento do botão Reiniciar
     document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
     
     // Evento para tecla Enter
@@ -43,7 +44,7 @@ function atualizarContador() {
     const restantes = palavrasBase.length - palavrasAcertadas.length;
     const contador = document.getElementById("contador");
     contador.textContent = restantes > 0 ? 
-        `Faltam ${restantes} palavra${restantes !== 1 ? 's' : ''}` : 
+        `Palavras restantes: ${restantes}` : 
         "🎉 Todas encontradas!";
 }
 
@@ -65,7 +66,7 @@ function verificarPalavra() {
     
     if (!palavraInput) {
         resultado.textContent = "⚠️ Digite uma palavra!";
-        resultado.style.color = "orange";
+        resultado.style.color = "#cc7a00";
         return;
     }
 
@@ -76,7 +77,7 @@ function verificarPalavra() {
     
     if (jaAcertou) {
         resultado.textContent = "⚠️ Você já acertou essa palavra!";
-        resultado.style.color = "orange";
+        resultado.style.color = "#cc7a00";
         return;
     }
 
@@ -87,16 +88,15 @@ function verificarPalavra() {
         pontuacao += palavraOriginal.length * 10;
         palavrasAcertadas.push(palavraOriginal);
         
-        document.getElementById("pontuacao").textContent = pontuacao;
-        resultado.textContent = `✅ ${palavraOriginal.toUpperCase()}! +${palavraOriginal.length * 10} pontos`;
-        resultado.style.color = "green";
+        resultado.textContent = `✅ ${palavraOriginal.toUpperCase()}!`;
+        resultado.style.color = "#006600";
         
         atualizarListaAcertos();
         atualizarContador();
         verificarVitoria();
     } else {
         resultado.textContent = "❌ Palavra inválida!";
-        resultado.style.color = "red";
+        resultado.style.color = "#cc0000";
     }
     
     // Limpa e mantém foco no campo
@@ -108,20 +108,20 @@ function verificarPalavra() {
 function verificarVitoria() {
     if (palavrasAcertadas.length === palavrasBase.length) {
         document.getElementById("resultado").innerHTML = 
-            "<span style='color: gold; font-size: 1.5em;'>🎉 FELIZ ANIVERSÁRIO, MOISÉS! 🎉</span>";
+            "<span style='color: #0066cc; font-size: 1.5em;'>🎉 FELIZ ANIVERSÁRIO, MOISÉS! 🎉</span>";
         document.getElementById("verificar-btn").disabled = true;
         document.getElementById("reiniciar-btn").style.display = "block";
         triggerConfetti();
     }
 }
 
-// Efeito de confetes
+// Efeito de confetes em tons de azul
 function triggerConfetti() {
     confetti({ 
         particleCount: 150, 
         spread: 70, 
         origin: { y: 0.6 },
-        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
+        colors: ['#0066cc', '#004d99', '#003366', '#66b3ff', '#b3d9ff']
     });
 }
 
@@ -131,7 +131,6 @@ function reiniciarJogo() {
     palavrasAcertadas = [];
     document.getElementById("palavras-acertadas").innerHTML = "";
     document.getElementById("resultado").textContent = "";
-    document.getElementById("pontuacao").textContent = "0";
     document.getElementById("verificar-btn").disabled = false;
     document.getElementById("reiniciar-btn").style.display = "none";
     iniciarJogo();

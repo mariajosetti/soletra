@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f8ff;
+    background-color: #e6f2ff;
     margin: 0;
     padding: 20px;
     display: flex;
@@ -20,19 +20,18 @@ body {
 }
 
 h1 {
-    color: #4CAF50;
+    color: #0066cc;
     margin-bottom: 20px;
 }
 
 .info {
-    display: flex;
-    justify-content: space-around;
     margin-bottom: 20px;
 }
 
 #contador {
     font-weight: bold;
-    color: #555;
+    color: #004080;
+    font-size: 1.2em;
 }
 
 .letras-disponiveis {
@@ -40,6 +39,7 @@ h1 {
     letter-spacing: 5px;
     margin: 20px 0;
     font-weight: bold;
+    color: #003366;
 }
 
 input {
@@ -47,23 +47,24 @@ input {
     font-size: 16px;
     width: 80%;
     margin-bottom: 10px;
-    border: 2px solid #ddd;
+    border: 2px solid #b3d9ff;
     border-radius: 5px;
 }
 
 button {
     padding: 10px 20px;
-    background: #4CAF50;
+    background: #0066cc;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     margin: 5px;
+    transition: background 0.3s;
 }
 
 button:hover {
-    background: #45a049;
+    background: #004d99;
 }
 
 #resultado {

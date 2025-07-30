@@ -30,6 +30,11 @@ h1 {
     margin-bottom: 20px;
 }
 
+#contador {
+    font-weight: bold;
+    color: #555;
+}
+
 .letras-disponiveis {
     font-size: 24px;
     letter-spacing: 5px;
@@ -69,10 +74,7 @@ button:hover {
 
 #palavras-acertadas {
     margin-top: 20px;
-    text-align: left;
-}
-
-#contador {
-    font-weight: bold;
-    color: #555;
+    text-align: center;
+    columns: 2;
+    column-gap: 20px;
 }

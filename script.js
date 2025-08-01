@@ -1,17 +1,17 @@
-// CONFIGURAÇÃO ATUALIZADA
+// LISTA COMPLETA DE PALAVRAS (25 palavras)
 const palavrasBase = [
-    "fome", "meio", "seio", "seis", "véio", 
-    "vime", "peso", "pome", "mesmo", "míope", 
-    "posse", "vsfpo", "fimose", "meiose", 
-    "moisés", "péssimo", "pessimismo"
+    "fimose", "fofo", "fome", "meio", "meiose",
+    "mesmo", "míope", "moisés", "peso", "pífio",
+    "pome", "pose", "posse", "povo", "seio",
+    "seis", "simpósio", "sismo", "véio", "vime",
+    "vivo", "vovo", "vsfpo", "péssimo", "pessimismo"
 ].sort((a, b) => a.length - b.length || a.localeCompare(b));
 
-// Versão normalizada sem acentos para comparação
+// CONFIGURAÇÕES DO JOGO
 const palavrasValidas = palavrasBase.map(palavra => 
     palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 );
 
-// Letras disponíveis (sem acentos e sem repetição)
 const letrasDisponiveis = Array.from(new Set(
     palavrasBase.join("")
         .normalize("NFD")
@@ -22,12 +22,13 @@ const letrasDisponiveis = Array.from(new Set(
 
 let palavrasAcertadas = [];
 
-// FUNÇÕES (mantidas as mesmas, exceto pela atualização de palavras)
+// FUNÇÕES PRINCIPAIS
 function iniciarJogo() {
     document.getElementById("letras").textContent = letrasDisponiveis.join(" ");
     document.getElementById("total-palavras").textContent = palavrasBase.length;
-    document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
+    
     document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
+    document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
     
     document.getElementById("palavra-input").addEventListener("keypress", function(e) {
         if (e.key === "Enter") verificarPalavra();
@@ -130,4 +131,5 @@ function reiniciarJogo() {
     document.getElementById("palavra-input").focus();
 }
 
+// INICIALIZAÇÃO
 window.onload = iniciarJogo;

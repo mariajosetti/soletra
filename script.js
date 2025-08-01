@@ -1,27 +1,33 @@
-// CONFIGURAÇÃO DO JOGO
+// CONFIGURAÇÃO ATUALIZADA
 const palavrasBase = [
-    "fome", "meio", "seio", "seis", "veio", 
-    "vime", "peso", "pome", "míope", "posse", 
-    "vsfpo", "fimose", "meiose", "moisés"
+    "fome", "meio", "seio", "seis", "véio", 
+    "vime", "peso", "pome", "mesmo", "míope", 
+    "posse", "vsfpo", "fimose", "meiose", 
+    "moisés", "péssimo", "pessimismo"
 ].sort((a, b) => a.length - b.length || a.localeCompare(b));
 
+// Versão normalizada sem acentos para comparação
 const palavrasValidas = palavrasBase.map(palavra => 
     palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 );
 
+// Letras disponíveis (sem acentos e sem repetição)
 const letrasDisponiveis = Array.from(new Set(
-    palavrasBase.join("").toUpperCase().split("")
+    palavrasBase.join("")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .split("")
 )).sort();
 
 let palavrasAcertadas = [];
 
-// FUNÇÕES PRINCIPAIS
+// FUNÇÕES (mantidas as mesmas, exceto pela atualização de palavras)
 function iniciarJogo() {
     document.getElementById("letras").textContent = letrasDisponiveis.join(" ");
     document.getElementById("total-palavras").textContent = palavrasBase.length;
-    
-    document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
     document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
+    document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
     
     document.getElementById("palavra-input").addEventListener("keypress", function(e) {
         if (e.key === "Enter") verificarPalavra();
@@ -74,7 +80,6 @@ function verificarPalavra() {
 function atualizarListaCompleta() {
     const palavrasPorTamanho = {};
     
-    // Agrupa todas as palavras por tamanho
     palavrasBase.forEach(palavra => {
         const tamanho = palavra.length;
         if (!palavrasPorTamanho[tamanho]) {
@@ -85,7 +90,6 @@ function atualizarListaCompleta() {
 
     let html = '';
     
-    // Ordena por tamanho (4, 5, 6 letras...)
     Object.keys(palavrasPorTamanho)
         .sort((a, b) => a - b)
         .forEach(tamanho => {
@@ -93,7 +97,6 @@ function atualizarListaCompleta() {
                         <h4>${tamanho} LETRAS:</h4>
                         <div class="lista-palavras">`;
             
-            // Ordena as palavras alfabeticamente e renderiza
             palavrasPorTamanho[tamanho]
                 .sort((a, b) => a.localeCompare(b))
                 .forEach(palavra => {
@@ -127,5 +130,4 @@ function reiniciarJogo() {
     document.getElementById("palavra-input").focus();
 }
 
-// INICIALIZAÇÃO
 window.onload = iniciarJogo;

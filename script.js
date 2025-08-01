@@ -1,127 +1,131 @@
-// Palavras válidas em ordem alfabética (SEM 'meso' e 'miso')
+// CONFIGURAÇÃO DO JOGO
 const palavrasBase = [
-    "fome", "meio", "míope", "moisés",
-    "peso", "pome", "seio", "seis",
-    "veio", "vime", "vsfpo"
-];
+    "fome", "meio", "seio", "seis", "veio", 
+    "vime", "peso", "pome", "míope", "posse", 
+    "vsfpo", "fimose", "meiose", "moisés"
+].sort((a, b) => a.length - b.length || a.localeCompare(b));
 
-// Versão normalizada para comparação
 const palavrasValidas = palavrasBase.map(palavra => 
     palavra.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 );
 
-// Letras disponíveis (ordem alfabética)
-const letrasDisponiveis = ["E", "F", "I", "M", "O", "P", "S", "V"];
+const letrasDisponiveis = Array.from(new Set(
+    palavrasBase.join("").toUpperCase().split("")
+)).sort();
+
 let palavrasAcertadas = [];
 
-// Inicia o jogo
+// FUNÇÕES PRINCIPAIS
 function iniciarJogo() {
-    document.getElementById("letras").textContent = letrasDisponiveis.join(", ");
-    document.getElementById("reiniciar-btn").style.display = "none";
-    atualizarContador();
-
-    // Eventos
+    document.getElementById("letras").textContent = letrasDisponiveis.join(" ");
+    document.getElementById("total-palavras").textContent = palavrasBase.length;
+    
     document.getElementById("verificar-btn").addEventListener("click", verificarPalavra);
     document.getElementById("reiniciar-btn").addEventListener("click", reiniciarJogo);
     
-    document.getElementById("palavra-input").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            verificarPalavra();
-        }
+    document.getElementById("palavra-input").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") verificarPalavra();
     });
     
+    atualizarListaCompleta();
     document.getElementById("palavra-input").focus();
 }
 
-// Atualiza o contador
-function atualizarContador() {
-    const restantes = palavrasBase.length - palavrasAcertadas.length;
-    document.getElementById("contador").textContent = restantes > 0 ? 
-        `Palavras restantes: ${restantes}` : 
-        "🎉 Todas encontradas!";
-}
-
-// Atualiza a lista de acertos
-function atualizarListaAcertos() {
-    const lista = document.getElementById("palavras-acertadas");
-    lista.innerHTML = palavrasAcertadas
-        .sort((a, b) => a.localeCompare(b, 'pt-BR'))
-        .map(palavra => `<div>✔️ ${palavra}</div>`)
-        .join("");
-}
-
-// Verifica a palavra
 function verificarPalavra() {
-    const palavraInput = document.getElementById("palavra-input").value
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    
+    const input = document.getElementById("palavra-input");
+    const palavra = input.value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     const resultado = document.getElementById("resultado");
     
-    if (!palavraInput) {
-        resultado.textContent = "⚠️ Digite uma palavra!";
-        resultado.style.color = "#e6ac00";
+    if (!palavra) {
+        resultado.textContent = "Digite uma palavra válida";
+        resultado.style.color = "#e74c3c";
         return;
     }
 
-    if (palavrasAcertadas.some(acertada => 
-        acertada.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === palavraInput)) {
-        resultado.textContent = "⚠️ Você já acertou essa palavra!";
-        resultado.style.color = "#e6ac00";
+    if (palavrasAcertadas.some(p => 
+        p.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() === palavra)) {
+        resultado.textContent = "Palavra já encontrada!";
+        resultado.style.color = "#e67e22";
         return;
     }
 
-    const palavraIndex = palavrasValidas.indexOf(palavraInput);
-    if (palavraIndex >= 0) {
-        const palavraOriginal = palavrasBase[palavraIndex];
-        palavrasAcertadas.push(palavraOriginal);
+    const index = palavrasValidas.indexOf(palavra);
+    if (index >= 0) {
+        palavrasAcertadas.push(palavrasBase[index]);
+        document.getElementById("palavras-encontradas").textContent = palavrasAcertadas.length;
+        resultado.textContent = `✓ "${palavrasBase[index]}" correto!`;
+        resultado.style.color = "#27ae60";
         
-        resultado.textContent = `✓ ${palavraOriginal.toUpperCase()} - Válida!`;
-        resultado.style.color = "#006600";
+        atualizarListaCompleta();
         
-        atualizarListaAcertos();
-        atualizarContador();
-        verificarVitoria();
+        if (palavrasAcertadas.length === palavrasBase.length) {
+            resultado.innerHTML = "<span style='font-size:1.4em'>🎉 FELIZ ANIVERSÁRIO, MOISÉS! 🎉</span>";
+            triggerConfetti();
+        }
     } else {
-        resultado.textContent = "✗ Palavra inválida!";
-        resultado.style.color = "#cc0000";
+        resultado.textContent = "Palavra não encontrada";
+        resultado.style.color = "#e74c3c";
     }
     
-    document.getElementById("palavra-input").value = "";
-    document.getElementById("palavra-input").focus();
+    input.value = "";
+    input.focus();
 }
 
-// Verifica vitória
-function verificarVitoria() {
-    if (palavrasAcertadas.length === palavrasBase.length) {
-        document.getElementById("resultado").innerHTML = 
-            "<span style='color: #0052cc; font-size: 1.4em;'>🎉 FELIZ ANIVERSÁRIO, MOISÉS! 🎉</span>";
-        document.getElementById("verificar-btn").disabled = true;
-        document.getElementById("reiniciar-btn").style.display = "block";
-        triggerConfetti();
-    }
+function atualizarListaCompleta() {
+    const palavrasPorTamanho = {};
+    
+    // Agrupa todas as palavras por tamanho
+    palavrasBase.forEach(palavra => {
+        const tamanho = palavra.length;
+        if (!palavrasPorTamanho[tamanho]) {
+            palavrasPorTamanho[tamanho] = [];
+        }
+        palavrasPorTamanho[tamanho].push(palavra);
+    });
+
+    let html = '';
+    
+    // Ordena por tamanho (4, 5, 6 letras...)
+    Object.keys(palavrasPorTamanho)
+        .sort((a, b) => a - b)
+        .forEach(tamanho => {
+            html += `<div class="grupo-tamanho">
+                        <h4>${tamanho} LETRAS:</h4>
+                        <div class="lista-palavras">`;
+            
+            // Ordena as palavras alfabeticamente e renderiza
+            palavrasPorTamanho[tamanho]
+                .sort((a, b) => a.localeCompare(b))
+                .forEach(palavra => {
+                    const foiEncontrada = palavrasAcertadas.includes(palavra);
+                    html += `<span class="item-palavra ${foiEncontrada ? 'palavra-encontrada' : 'palavra-faltante'}">
+                                ${foiEncontrada ? palavra : '_'.repeat(palavra.length)}
+                            </span>`;
+                });
+            
+            html += `</div></div>`;
+        });
+    
+    document.getElementById("lista-completa").innerHTML = html;
 }
 
-// Confetes azuis
 function triggerConfetti() {
-    confetti({ 
-        particleCount: 180,
-        spread: 80,
+    confetti({
+        particleCount: 150,
+        spread: 70,
         origin: { y: 0.6 },
-        colors: ['#0052cc', '#0066ff', '#3385ff', '#66a3ff', '#99c2ff'],
-        shapes: ['circle', 'square']
+        colors: ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f']
     });
 }
 
-// Reinicia o jogo
 function reiniciarJogo() {
     palavrasAcertadas = [];
-    document.getElementById("palavras-acertadas").innerHTML = "";
+    document.getElementById("palavra-input").value = "";
     document.getElementById("resultado").textContent = "";
-    document.getElementById("verificar-btn").disabled = false;
-    document.getElementById("reiniciar-btn").style.display = "none";
-    iniciarJogo();
+    document.getElementById("palavras-encontradas").textContent = "0";
+    atualizarListaCompleta();
+    document.getElementById("palavra-input").focus();
 }
 
-// Inicia ao carregar
+// INICIALIZAÇÃO
 window.onload = iniciarJogo;
